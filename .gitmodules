@@ -1,0 +1,3 @@
+[submodule "llmkvb/executor/vidur"]
+	path = llmkvb/executor/vidur
+	url = https://github.com/XbzOnGit/vidur.git

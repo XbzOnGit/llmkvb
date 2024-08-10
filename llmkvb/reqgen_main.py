@@ -8,14 +8,10 @@ def main():
     set_seeds(config["seed"])
     reqgen = RequestGeneratorRegistry.get_from_str(config["request_generator"]["provider"], config["request_generator"])
     reqlist = reqgen.generate_requests()
-    reqid = 0
-    for req in reqlist:
-        print(f"reqid: {reqid}")
-        print(f"arrived_at: {req.arrived_at}")
-        print(f"output_length: {req.output_length}")
-        print(f"tokens: {req.tokens}")
-        print("\n")
-        reqid += 1
+    with open("output.jsonl", "w") as f:
+        for req in reqlist:
+            dumpstr = req.dump_json_line_string()
+            f.write(dumpstr)
 
 
 
