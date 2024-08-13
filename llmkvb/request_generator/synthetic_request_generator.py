@@ -55,6 +55,7 @@ class SyntheticRequestGenerator(BaseRequestGenerator):
                 copy_req = retval[prefix_from_req_id]
                 copy_list = copy_req.tokens
                 tokens.extend(copy_list[:prefix_length])
+                # print("After copying prefix: token lentgh: ", len(tokens))
                 # Deal with others.
                 lastend = prefix_length - 1
                 for seg in segments:
@@ -62,7 +63,9 @@ class SyntheticRequestGenerator(BaseRequestGenerator):
                     length = seg[1]
                     # Random for [lastend + 1, st - 1]
                     ranlen = st - lastend - 1
+                    # print(f"ranlen in between {ranlen}")
                     tokens.extend(self.gen_random_tokens(ranlen))
+                    # print("After random: token lentgh: ", len(tokens))
                     # Copy for [st, st + length - 1]
                     copy_req_id = self.request_selection_generator.request_selection()
                     copy_req = retval[copy_req_id]
@@ -72,19 +75,27 @@ class SyntheticRequestGenerator(BaseRequestGenerator):
                     else:
                         copy_start_index = self.start_selection_generator.select(left=0, right=len(copy_req.tokens) - 1)
                     copy_list = copy_req.tokens
+                    # print(f"Copy from {copy_req_id}, {copy_start_index} : {copy_start_index + length} with length {length} to {st}: {st + length}")
+                    # print(f"Choses req: {copy_req_id} with length {len(copy_list)}")
                     if len(copy_list) < length:
                         first_round = len(copy_list) - copy_start_index
                         tokens.extend(copy_list[copy_start_index:copy_start_index + first_round])
+                        # print(f"After extend of first round with copy req < length, {len(tokens)}")
                         remaining_copy_cnt = length - first_round
                         while remaining_copy_cnt > len(copy_list):
                             tokens.extend(copy_list)
+                            # print(f"After extend of middle rounds with copy req < length, {len(tokens)}")
                             remaining_copy_cnt -= len(copy_list)
                         tokens.extend(copy_list[:remaining_copy_cnt])
+                        # print(f"After extend of last round with copy req < length, {len(tokens)}")
                     else:
                         tokens.extend(copy_list[copy_start_index:copy_start_index + length])
+                        # print(f"After extend of copy req >= length, {len(tokens)}")
+                    lastend = st + length - 1
                 # The last random one for [lastend + 1, input_length - 1]
                 ranlen = input_length - lastend - 1
                 tokens.extend(self.gen_random_tokens(ranlen))
+                # print(f"After update of last randoms {len(tokens)}")
             self.request_selection_generator.update()
             pool_size += 1
             retval.append(Request(arrived_at=arrived_at, tokens=tokens, output_length=output_length))

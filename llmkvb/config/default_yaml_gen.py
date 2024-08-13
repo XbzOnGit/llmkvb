@@ -3,7 +3,7 @@ import yaml
 default_yaml_dict = {"request_generator":{"provider":"synthetic", 
 "shape_generator":{"provider": "synthetic",
                   "request_interval_generator" : {"provider":"poisson", "qps": 0.5}, 
-                   "request_length_generator":{"provider":"uniform", "min_tokens": 30, "max_tokens": 4000, "prefill_to_decode_ratio": 0.2},
+                   "request_length_generator":{"provider":"uniform", "min_tokens": 30, "max_tokens": 4000, "prefill_to_decode_ratio": 30},
                    "num_requests" : 20,
                    "seed": 42,
                    },
