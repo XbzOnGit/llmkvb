@@ -5,14 +5,18 @@ from llmkvb.request_generator.request_generator_registry import RequestGenerator
 from llmkvb.executor.executor_registry import ExecutorRegistry
 from copy import deepcopy
 import sys
+import json
+from llmkvb.entities.request import Request as KV_Request
 
 def parse_args():
     parser = argparse.ArgumentParser(description="LLMKVB: Large Language Model KV Cache Benchmark")
     parser.add_argument("--llmkvb_config", type=str, help="Path to the configuration file", default="./llmkvb/config/default.yaml")
     parser.add_argument("--llmkvb_trace_output_file", default=None)
     parser.add_argument("--llmkvb_executor", default="vidur")
+    parser.add_argument("--llmkvb_trace_input_file", default=None)
     args = deepcopy(sys.argv[1:])
-    args, _ = parser.parse_known_args(args)
+    args, not_recog = parser.parse_known_args(args)
+    sys.argv[1:] = not_recog
     return args
 
 def main():
@@ -21,8 +25,18 @@ def main():
     with open(args.llmkvb_config, "r") as f:
         config = yaml.safe_load(f)
     set_seeds(config["seed"])
-    reqgen = RequestGeneratorRegistry.get_from_str(config["request_generator"]["provider"], config["request_generator"])
-    reqlist = reqgen.generate_requests()
+    reqlist = None
+    if args.llmkvb_trace_input_file is not None:
+        reqlist = []
+        with open(args.llmkvb_trace_input_file, "r") as f:
+            for line in f:
+                req_dict = json.loads(line)
+                reqlist.append(KV_Request
+                               (arrived_at=req_dict["arrived_at"], 
+                                tokens=req_dict["tokens"], output_length=req_dict["output_length"]))
+    else:
+        reqgen = RequestGeneratorRegistry.get_from_str(config["request_generator"]["provider"], config["request_generator"])
+        reqlist = reqgen.generate_requests()
     if args.llmkvb_trace_output_file is not None:
         with open(args.llmkvb_trace_output_file, "w") as f:
             for req in reqlist:
