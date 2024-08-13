@@ -4,3 +4,13 @@ __pycache__/
 TODO.md
 spec.md
 exps.md
+output.jsonl
+trace.jsonl
+recent_updates.md
+recent_updates.pdf
+problems.md
+next.md
+draft.txt
+executor.md
+.venv
+simulator_output

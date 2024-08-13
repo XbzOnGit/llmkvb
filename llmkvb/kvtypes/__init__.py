@@ -10,6 +10,7 @@ from llmkvb.kvtypes.segment_interval_generator_type import SegmentIntervalGenera
 from llmkvb.kvtypes.new_string_generator_type import NewStringGeneratorType
 from llmkvb.kvtypes.request_selection_generator_type import RequestSelectionGeneratorType
 from llmkvb.kvtypes.start_selection_generator_type import StartSelectionGeneratorType
+from llmkvb.kvtypes.executor_type import ExecutorType
 
 __all__ = [
     BaseIntEnum,
@@ -24,4 +25,5 @@ __all__ = [
     NewStringGeneratorType,
     RequestSelectionGeneratorType,
     StartSelectionGeneratorType,
+    ExecutorType,
 ]
