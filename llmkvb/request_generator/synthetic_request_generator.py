@@ -32,6 +32,21 @@ class SyntheticRequestGenerator(BaseRequestGenerator):
         for _ in range(length):
             random_tokens.append(random.choice(self.vocab_no_special_string_list))
         return random_tokens
+    def gen_copy_tokens(self, copy_list, copy_start, copy_len):
+        assert copy_start >= 0 and copy_start < len(copy_list)
+        assert copy_len >= 0
+        retval = []
+        if copy_start + copy_len <= len(copy_list):
+            return copy_list[copy_start:copy_start + copy_len]
+        else:
+            first_round = len(copy_list) - copy_start
+            retval.extend(copy_list[copy_start:])
+            remaining_copy_cnt = copy_len - first_round
+            while remaining_copy_cnt > len(copy_list):
+                retval.extend(copy_list)
+                remaining_copy_cnt -= len(copy_list)
+            retval.extend(copy_list[:remaining_copy_cnt])
+            return retval
     def generate_requests(self) -> List[Request]:
         # timestamp && tokens
         retval = []
@@ -54,8 +69,8 @@ class SyntheticRequestGenerator(BaseRequestGenerator):
                 prefix_from_req_id = self.request_selection_generator.request_selection()
                 copy_req = retval[prefix_from_req_id]
                 copy_list = copy_req.tokens
-                tokens.extend(copy_list[:prefix_length])
-                # print("After copying prefix: token lentgh: ", len(tokens))
+                tokens.extend(self.gen_copy_tokens(copy_list, 0, prefix_length))
+                assert len(tokens) == prefix_length
                 # Deal with others.
                 lastend = prefix_length - 1
                 for seg in segments:
@@ -65,8 +80,9 @@ class SyntheticRequestGenerator(BaseRequestGenerator):
                     ranlen = st - lastend - 1
                     # print(f"ranlen in between {ranlen}")
                     tokens.extend(self.gen_random_tokens(ranlen))
+                    assert len(tokens) == st
                     # print("After random: token lentgh: ", len(tokens))
-                    # Copy for [st, st + length - 1]
+                    # Copy to [st, st + length - 1]
                     copy_req_id = self.request_selection_generator.request_selection()
                     copy_req = retval[copy_req_id]
                     copy_start_index = 0
@@ -77,24 +93,13 @@ class SyntheticRequestGenerator(BaseRequestGenerator):
                     copy_list = copy_req.tokens
                     # print(f"Copy from {copy_req_id}, {copy_start_index} : {copy_start_index + length} with length {length} to {st}: {st + length}")
                     # print(f"Choses req: {copy_req_id} with length {len(copy_list)}")
-                    if len(copy_list) < length:
-                        first_round = len(copy_list) - copy_start_index
-                        tokens.extend(copy_list[copy_start_index:copy_start_index + first_round])
-                        # print(f"After extend of first round with copy req < length, {len(tokens)}")
-                        remaining_copy_cnt = length - first_round
-                        while remaining_copy_cnt > len(copy_list):
-                            tokens.extend(copy_list)
-                            # print(f"After extend of middle rounds with copy req < length, {len(tokens)}")
-                            remaining_copy_cnt -= len(copy_list)
-                        tokens.extend(copy_list[:remaining_copy_cnt])
-                        # print(f"After extend of last round with copy req < length, {len(tokens)}")
-                    else:
-                        tokens.extend(copy_list[copy_start_index:copy_start_index + length])
-                        # print(f"After extend of copy req >= length, {len(tokens)}")
+                    tokens.extend(self.gen_copy_tokens(copy_list, copy_start_index, length))
+                    assert len(tokens) == st + length
                     lastend = st + length - 1
                 # The last random one for [lastend + 1, input_length - 1]
                 ranlen = input_length - lastend - 1
                 tokens.extend(self.gen_random_tokens(ranlen))
+                assert len(tokens) == input_length
                 # print(f"After update of last randoms {len(tokens)}")
             self.request_selection_generator.update()
             pool_size += 1

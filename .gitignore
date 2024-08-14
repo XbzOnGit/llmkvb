@@ -6,6 +6,7 @@ spec.md
 exps.md
 output.jsonl
 trace.jsonl
+test.jsonl
 recent_updates.md
 recent_updates.pdf
 problems.md
@@ -14,3 +15,6 @@ draft.txt
 executor.md
 .venv
 simulator_output
+doc.md
+doc.pdf
+check_token_length.py
