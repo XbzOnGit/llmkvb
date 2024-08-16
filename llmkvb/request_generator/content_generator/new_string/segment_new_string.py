@@ -1,5 +1,5 @@
 from typing import List, Tuple
-import importlib
+import random
 from llmkvb.request_generator.content_generator.new_string.base_new_string import (
     BaseNewStringGenerator,
 )
@@ -37,9 +37,16 @@ class SegmentNewStringGenerator(BaseNewStringGenerator):
         self.segment_interval_left_per_length = self._config["segment_interval_generator"]["left_per_length"]
         self.segment_interval_right_per_length = self._config["segment_interval_generator"]["right_per_length"]
         self.max_following_segment_cnt = self._config["max_following_segment_cnt"]
+        if "no_reuse_probability" in self._config:
+            self.no_reuse_probability = self._config["no_reuse_probability"]
+        else:
+            self.no_reuse_probability = 0.0
     def generate_new_string(self, **kwargs) -> Tuple[int, List[Tuple[int, int]]]:
         input_length = kwargs.get("input_length", None)
         assert input_length is not None, "input_length is required"
+        if self.no_reuse_probability > 0.0 and random.random() < self.no_reuse_probability:
+            return (0, [])
+
         reuse_ratio = self.reuse_ratio_generator.get_number(length=input_length, min=0.0, max=1.0,\
                                                              left=self.reuse_ratio_left, right=self.reuse_ratio_right)
         prefix_ratio = self.prefix_ratio_generator.get_number(length=input_length, min=0.0, max=1.0,\

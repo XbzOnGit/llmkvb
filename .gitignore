@@ -18,3 +18,7 @@ simulator_output
 doc.md
 doc.pdf
 check_token_length.py
+prefix_uniform.jsonl
+prefix_latest_long.jsonl
+updates.md
+updates.pdf
