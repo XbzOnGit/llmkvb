@@ -42,9 +42,15 @@ def main():
             for req in reqlist:
                 dumpstr = req.dump_json_line_string()
                 f.write(dumpstr)
+    repeat_times = 1
+    if "repeatition" in config:
+        repeat_times = config["repeatition"]
+    final_req_list = []
+    for _ in range(repeat_times):
+        final_req_list.extend(reqlist)
     if args.llmkvb_executor is not None:
         executor = ExecutorRegistry.get_from_str(args.llmkvb_executor)
-        executor.execute(reqlist)
+        executor.execute(final_req_list)
 
 
 if __name__ == "__main__":
