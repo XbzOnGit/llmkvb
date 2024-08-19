@@ -26,11 +26,14 @@ def main():
         config = yaml.safe_load(f)
     set_seeds(config["seed"])
     reqlist = None
+    max_arrival_time = 0.0
     if args.llmkvb_trace_input_file is not None:
         reqlist = []
         with open(args.llmkvb_trace_input_file, "r") as f:
             for line in f:
                 req_dict = json.loads(line)
+                if req_dict["arrived_at"] > max_arrival_time:
+                    max_arrival_time = req_dict["arrived_at"]
                 reqlist.append(KV_Request
                                (arrived_at=req_dict["arrived_at"], 
                                 tokens=req_dict["tokens"], output_length=req_dict["output_length"]))
@@ -45,12 +48,19 @@ def main():
     repeat_times = 1
     if "repeatition" in config:
         repeat_times = config["repeatition"]
-    final_req_list = []
-    for _ in range(repeat_times):
-        final_req_list.extend(reqlist)
+    repeat_interval = 0.0
+    if "repeat_interval" in config:
+        repeat_interval = config["repeat_interval"]
+    base_arrive_time = max_arrival_time + repeat_interval
+    base_len = len(reqlist)
+    for _ in range(repeat_times - 1):
+        for i in range(base_len):
+            reqlist.append(KV_Request(arrived_at=base_arrive_time + reqlist[i].arrived_at, 
+                                      tokens=reqlist[i].tokens, output_length=reqlist[i].output_length))
+        base_arrive_time += (max_arrival_time + repeat_interval)
     if args.llmkvb_executor is not None:
         executor = ExecutorRegistry.get_from_str(args.llmkvb_executor)
-        executor.execute(final_req_list)
+        executor.execute(reqlist)
 
 
 if __name__ == "__main__":
