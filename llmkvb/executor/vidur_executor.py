@@ -23,7 +23,7 @@ class VidurExecutor(BaseExecutor):
         external_trace = []
         for req in reqlist:
             # print(f"arrived_at: {req.arrived_at}, num_prefill_tokens: {len(req.tokens)}, num_decode_tokens: {req.output_length}")
-            vidur_req = Request(arrived_at=req.arrived_at, num_prefill_tokens=len(req.tokens), 
+            vidur_req = Request(arrived_at=req.arrived_at, num_prefill_tokens=len(req.tokens) - req.output_length, 
                                 num_decode_tokens=req.output_length, num_processed_tokens=0, tokens=req.tokens)
             external_trace.append(vidur_req)
         self.simulation_config.external_trace_injected = True

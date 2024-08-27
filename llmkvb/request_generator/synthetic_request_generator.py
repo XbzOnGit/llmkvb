@@ -51,10 +51,13 @@ class SyntheticRequestGenerator(BaseRequestGenerator):
         # timestamp && tokens
         retval = []
         request_shapes : List[Shape_Request] = self.shape_generator.generate_requests()
+        # print(f"{request_shapes[0].input_length}\n\n")
         pool_size = 0
         for shape in request_shapes:
             arrived_at = shape.arrived_at
-            input_length = shape.input_length
+            # Now also generate outputs.
+            # Also into tokens.
+            input_length = shape.input_length + shape.output_length
             output_length = shape.output_length
             new_string = self.new_string_generator.generate_new_string(input_length=input_length)
             prefix_length = new_string[0]
@@ -103,7 +106,9 @@ class SyntheticRequestGenerator(BaseRequestGenerator):
                 # print(f"After update of last randoms {len(tokens)}")
             self.request_selection_generator.update()
             pool_size += 1
+            # Now tokens is input + output.
             retval.append(Request(arrived_at=arrived_at, tokens=tokens, output_length=output_length))
+            # print(f"Request {len(retval)}: {arrived_at}, {len(tokens)}, {output_length}")
         return retval
         
         
