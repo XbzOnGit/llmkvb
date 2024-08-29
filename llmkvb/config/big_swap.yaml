@@ -1,17 +1,18 @@
+repeat_interval: 0.2
+repeatition: 10
 request_generator:
   content_generator:
     new_string_generator:
       max_following_segment_cnt: 4
-      no_reuse_probability: 0.1
       prefix_ratio_generator:
-        left: 0.0
+        left: 1.0
         provider: uniform
         right: 1.0
       provider: segment_new_string
       reuse_ratio_generator:
-        left: 0.5
+        left: 0.0
         provider: uniform
-        right: 0.8
+        right: 0.0
       segment_interval_generator:
         left_per_length: 0
         provider: uniform
@@ -29,15 +30,15 @@ request_generator:
   local_files_only: true
   provider: synthetic
   shape_generator:
-    num_requests: 1000
+    num_requests: 100
     provider: synthetic
     request_interval_generator:
       provider: poisson
       qps: 5.0
     request_length_generator:
-      max_tokens: 4000
-      min_tokens: 4000
-      prefill_to_decode_ratio: 400
+      max_tokens: 3000
+      min_tokens: 3000
+      prefill_to_decode_ratio: 300
       provider: uniform
     seed: 42
   tokenizer_name: bert-base-uncased
