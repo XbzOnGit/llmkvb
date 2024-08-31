@@ -102,7 +102,7 @@ class SyntheticRequestGenerator(BaseRequestGenerator):
                 # The last random one for [lastend + 1, input_length - 1]
                 ranlen = input_length - lastend - 1
                 tokens.extend(self.gen_random_tokens(ranlen))
-                assert len(tokens) == input_length
+                assert len(tokens) == input_length, f"{len(tokens)} != {input_length}"
                 # print(f"After update of last randoms {len(tokens)}")
             self.request_selection_generator.update()
             pool_size += 1

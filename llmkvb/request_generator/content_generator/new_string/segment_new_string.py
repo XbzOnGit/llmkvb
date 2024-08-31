@@ -46,11 +46,16 @@ class SegmentNewStringGenerator(BaseNewStringGenerator):
         assert input_length is not None, "input_length is required"
         if self.no_reuse_probability > 0.0 and random.random() < self.no_reuse_probability:
             return (0, [])
-
+        assert self.reuse_ratio_left >= 0.0 and self.reuse_ratio_left <= 1.0, "reuse_ratio_left should be in [0, 1]"
+        assert self.reuse_ratio_right >= 0.0 and self.reuse_ratio_right <= 1.0, "reuse_ratio_right should be in [0, 1]"
+        assert self.prefix_ratio_left >= 0.0 and self.prefix_ratio_left <= 1.0, "prefix_ratio_left should be in [0, 1]"
+        assert self.prefix_ratio_right >= 0.0 and self.prefix_ratio_right <= 1.0, "prefix_ratio_right should be in [0, 1]"
         reuse_ratio = self.reuse_ratio_generator.get_number(length=input_length, min=0.0, max=1.0,\
                                                              left=self.reuse_ratio_left, right=self.reuse_ratio_right)
         prefix_ratio = self.prefix_ratio_generator.get_number(length=input_length, min=0.0, max=1.0,\
                                                               left=self.prefix_ratio_left, right=self.prefix_ratio_right)
+        assert reuse_ratio >= 0.0 and reuse_ratio <= 1.0, "reuse_ratio should be in [0, 1]"
+        assert prefix_ratio >= 0.0 and prefix_ratio <= 1.0, "prefix_ratio should be in [0, 1]"
         reuse_length = round(input_length * reuse_ratio)
         prefix_length = round(reuse_length * prefix_ratio)
         remaining_length = reuse_length - prefix_length

@@ -9,7 +9,7 @@ request_generator:
         right: 1.0
       provider: segment_new_string
       reuse_ratio_generator:
-        left: 0.0
+        left: 0.5
         provider: uniform
         right: 1.0
       segment_interval_generator:
@@ -37,7 +37,7 @@ request_generator:
     request_length_generator:
       max_tokens: 4000
       min_tokens: 3000
-      prefill_to_decode_ratio: 100
+      prefill_to_decode_ratio: 400
       provider: uniform
     seed: 42
   tokenizer_name: bert-base-uncased
