@@ -2,16 +2,16 @@ request_generator:
   content_generator:
     new_string_generator:
       max_following_segment_cnt: 4
-      no_reuse_probability: 0.1
+      no_reuse_probability: 0.0
       prefix_ratio_generator:
         left: 0.0
         provider: uniform
         right: 1.0
       provider: segment_new_string
       reuse_ratio_generator:
-        left: 0.5
+        left: 0.7
         provider: uniform
-        right: 0.8
+        right: 0.9
       segment_interval_generator:
         left_per_length: 0
         provider: uniform

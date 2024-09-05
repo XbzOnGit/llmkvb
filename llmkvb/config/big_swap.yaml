@@ -38,7 +38,7 @@ request_generator:
     request_length_generator:
       max_tokens: 3000
       min_tokens: 3000
-      prefill_to_decode_ratio: 300
+      prefill_to_decode_ratio: 30
       provider: uniform
     seed: 42
   tokenizer_name: bert-base-uncased
