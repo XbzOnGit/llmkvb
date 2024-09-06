@@ -40,6 +40,9 @@ def main():
     else:
         reqgen = RequestGeneratorRegistry.get_from_str(config["request_generator"]["provider"], config["request_generator"])
         reqlist = reqgen.generate_requests()
+        for req in reqlist:
+            if req.arrived_at > max_arrival_time:
+                max_arrival_time = req.arrived_at
     if args.llmkvb_trace_output_file is not None:
         with open(args.llmkvb_trace_output_file, "w") as f:
             for req in reqlist:
@@ -49,15 +52,20 @@ def main():
     if "repeatition" in config:
         repeat_times = config["repeatition"]
     repeat_interval = 0.0
+    # print(f"max_arrival_time: {max_arrival_time}!!!!!!!!!!!!\n\n")
     if "repeat_interval" in config:
         repeat_interval = config["repeat_interval"]
     base_arrive_time = max_arrival_time + repeat_interval
     base_len = len(reqlist)
+    # total_cnt = base_len
     for _ in range(repeat_times - 1):
         for i in range(base_len):
+            # print(f"Should have {total_cnt} arrivaing at {base_arrive_time + reqlist[i].arrived_at}")
+            # total_cnt += 1
             reqlist.append(KV_Request(arrived_at=base_arrive_time + reqlist[i].arrived_at, 
                                       tokens=reqlist[i].tokens, output_length=reqlist[i].output_length))
         base_arrive_time += (max_arrival_time + repeat_interval)
+        # print(f"base_arrive_time of {_}: {base_arrive_time}")
     if args.llmkvb_executor is not None:
         executor = ExecutorRegistry.get_from_str(args.llmkvb_executor)
         executor.execute(reqlist)

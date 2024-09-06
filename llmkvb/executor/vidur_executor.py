@@ -25,6 +25,7 @@ class VidurExecutor(BaseExecutor):
             # print(f"arrived_at: {req.arrived_at}, num_prefill_tokens: {len(req.tokens)}, num_decode_tokens: {req.output_length}")
             vidur_req = Request(arrived_at=req.arrived_at, num_prefill_tokens=len(req.tokens) - req.output_length, 
                                 num_decode_tokens=req.output_length, num_processed_tokens=0, tokens=req.tokens)
+            # print(f"Request {vidur_req.id} is arriving at {vidur_req.arrived_at}.")
             external_trace.append(vidur_req)
         self.simulation_config.external_trace_injected = True
         self.simulation_config.external_trace = external_trace
