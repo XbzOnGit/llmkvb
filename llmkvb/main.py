@@ -14,6 +14,7 @@ def parse_args():
     parser.add_argument("--llmkvb_trace_output_file", default=None)
     parser.add_argument("--llmkvb_executor", default="vidur")
     parser.add_argument("--llmkvb_trace_input_file", default=None)
+    parser.add_argument('--llmkvb_qps_scale', type=float, default=1.0)
     args = deepcopy(sys.argv[1:])
     args, not_recog = parser.parse_known_args(args)
     sys.argv[1:] = not_recog
@@ -25,6 +26,12 @@ def main():
     with open(args.llmkvb_config, "r") as f:
         config = yaml.safe_load(f)
     set_seeds(config["seed"])
+    qps_scale = args.llmkvb_qps_scale
+    assert qps_scale > 0
+    qps = config["request_generator"]["shape_generator"]["request_interval_generator"]["qps"]
+    assert qps > 0
+    now_qps = qps * qps_scale
+    print(f"qps: {now_qps}")
     reqlist = None
     max_arrival_time = 0.0
     if args.llmkvb_trace_input_file is not None:
@@ -32,6 +39,7 @@ def main():
         with open(args.llmkvb_trace_input_file, "r") as f:
             for line in f:
                 req_dict = json.loads(line)
+                req_dict["arrived_at"] = req_dict["arrived_at"] / qps_scale
                 if req_dict["arrived_at"] > max_arrival_time:
                     max_arrival_time = req_dict["arrived_at"]
                 reqlist.append(KV_Request
@@ -41,6 +49,7 @@ def main():
         reqgen = RequestGeneratorRegistry.get_from_str(config["request_generator"]["provider"], config["request_generator"])
         reqlist = reqgen.generate_requests()
         for req in reqlist:
+            req.arrived_at = req.arrived_at / qps_scale
             if req.arrived_at > max_arrival_time:
                 max_arrival_time = req.arrived_at
     if args.llmkvb_trace_output_file is not None:
@@ -51,10 +60,8 @@ def main():
     repeat_times = 1
     if "repeatition" in config:
         repeat_times = config["repeatition"]
-    repeat_interval = 0.0
-    # print(f"max_arrival_time: {max_arrival_time}!!!!!!!!!!!!\n\n")
-    if "repeat_interval" in config:
-        repeat_interval = config["repeat_interval"]
+    repeat_interval = 1 / now_qps
+    print(f"repeat_interval: {repeat_interval}\n\n")
     base_arrive_time = max_arrival_time + repeat_interval
     base_len = len(reqlist)
     # total_cnt = base_len
