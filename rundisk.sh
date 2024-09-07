@@ -13,11 +13,11 @@ config_name=$1
 for paper in $papers; do
     echo "Running $paper"
     result_str=$(./runqpsdisk.sh $paper $config_name)
-    # qps=$(echo $result_str | grep -oP "qps to get to max throughput: \K[0-9.]+")
+    qps=$(echo $result_str | grep -oP "qps to get max throughput: \K[0-9.]+")
     # For now, ignore the threshold qps.
     throughput=$(echo $result_str | grep -oP "Throughput: \K[0-9.]+")
     avg_ttft=$(echo $result_str | grep -oP "Average ttft: \K[0-9.]+")
-    echo "$paper, throughput: $throughput, avg_ttft: $avg_ttft"
+    echo "$paper, throughput: $throughput, avg_ttft: $avg_ttft, reached at qps: $qps"
     echo ""
     if [ ${#throughput_list} -eq 0 ]; then
         throughput_list="$throughput"
