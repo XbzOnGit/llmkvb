@@ -15,6 +15,7 @@ def parse_args():
     parser.add_argument("--llmkvb_executor", default="vidur")
     parser.add_argument("--llmkvb_trace_input_file", default=None)
     parser.add_argument('--llmkvb_qps_scale', type=float, default=1.0)
+    parser.add_argument('--llmkvb_tracegen_only', action='store_true')
     args = deepcopy(sys.argv[1:])
     args, not_recog = parser.parse_known_args(args)
     sys.argv[1:] = not_recog
@@ -27,6 +28,7 @@ def main():
         config = yaml.safe_load(f)
     set_seeds(config["seed"])
     qps_scale = args.llmkvb_qps_scale
+    tracegen_only = args.llmkvb_tracegen_only
     assert qps_scale > 0
     qps = config["request_generator"]["shape_generator"]["request_interval_generator"]["qps"]
     assert qps > 0
@@ -60,7 +62,8 @@ def main():
             req.arrived_at = req.arrived_at / qps_scale
             if req.arrived_at > max_arrival_time:
                 max_arrival_time = req.arrived_at
-    
+    if tracegen_only:
+        return
     print(f"scaled qps: {now_qps}")
     print(f"max_arrival_time of the first {len(reqlist)}: {max_arrival_time}")
     repeat_times = 1
