@@ -10,6 +10,9 @@ from llmkvb.request_generator.shape_generator.static_request_interval_generator 
 from llmkvb.request_generator.shape_generator.trace_request_interval_generator import (
     TraceRequestIntervalGenerator,
 )
+from llmkvb.request_generator.shape_generator.fixed_request_interval_generator import (
+    FixedRequestIntervalGenerator,
+)
 from llmkvb.kvtypes import RequestIntervalGeneratorType
 from llmkvb.utils.base_registry import BaseRegistry
 
@@ -31,4 +34,7 @@ RequestIntervalGeneratorRegistry.register(
 )
 RequestIntervalGeneratorRegistry.register(
     RequestIntervalGeneratorType.TRACE, TraceRequestIntervalGenerator
+)
+RequestIntervalGeneratorRegistry.register(
+    RequestIntervalGeneratorType.FIXED, FixedRequestIntervalGenerator
 )

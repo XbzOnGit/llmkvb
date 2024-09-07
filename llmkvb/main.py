@@ -31,7 +31,6 @@ def main():
     qps = config["request_generator"]["shape_generator"]["request_interval_generator"]["qps"]
     assert qps > 0
     now_qps = qps * qps_scale
-    print(f"qps: {now_qps}")
     reqlist = None
     max_arrival_time = 0.0
     if args.llmkvb_trace_input_file is not None:
@@ -39,7 +38,10 @@ def main():
         with open(args.llmkvb_trace_input_file, "r") as f:
             for line in f:
                 req_dict = json.loads(line)
+                from_time = req_dict["arrived_at"]
                 req_dict["arrived_at"] = req_dict["arrived_at"] / qps_scale
+                to_time = req_dict["arrived_at"]
+                # print(f"arrived_at: from_time: {from_time}, to_time: {to_time}")
                 if req_dict["arrived_at"] > max_arrival_time:
                     max_arrival_time = req_dict["arrived_at"]
                 reqlist.append(KV_Request
@@ -48,30 +50,33 @@ def main():
     else:
         reqgen = RequestGeneratorRegistry.get_from_str(config["request_generator"]["provider"], config["request_generator"])
         reqlist = reqgen.generate_requests()
+        if args.llmkvb_trace_output_file is not None:
+            with open(args.llmkvb_trace_output_file, "w") as f:
+                for req in reqlist:
+                    dumpstr = req.dump_json_line_string()
+                    f.write(dumpstr)
         for req in reqlist:
+            # print(f"Original, arrived_at: {req.arrived_at}")
             req.arrived_at = req.arrived_at / qps_scale
             if req.arrived_at > max_arrival_time:
                 max_arrival_time = req.arrived_at
-    if args.llmkvb_trace_output_file is not None:
-        with open(args.llmkvb_trace_output_file, "w") as f:
-            for req in reqlist:
-                dumpstr = req.dump_json_line_string()
-                f.write(dumpstr)
+    
+    print(f"scaled qps: {now_qps}")
+    print(f"max_arrival_time of the first {len(reqlist)}: {max_arrival_time}")
     repeat_times = 1
     if "repeatition" in config:
         repeat_times = config["repeatition"]
-    repeat_interval = 1 / now_qps
-    print(f"repeat_interval: {repeat_interval}\n\n")
-    base_arrive_time = max_arrival_time + repeat_interval
+    base_arrive_time = max_arrival_time
     base_len = len(reqlist)
     # total_cnt = base_len
     for _ in range(repeat_times - 1):
         for i in range(base_len):
             # print(f"Should have {total_cnt} arrivaing at {base_arrive_time + reqlist[i].arrived_at}")
             # total_cnt += 1
+            # print(f"output_length: {reqlist[i].output_length}")
             reqlist.append(KV_Request(arrived_at=base_arrive_time + reqlist[i].arrived_at, 
                                       tokens=reqlist[i].tokens, output_length=reqlist[i].output_length))
-        base_arrive_time += (max_arrival_time + repeat_interval)
+        base_arrive_time += max_arrival_time
         # print(f"base_arrive_time of {_}: {base_arrive_time}")
     if args.llmkvb_executor is not None:
         executor = ExecutorRegistry.get_from_str(args.llmkvb_executor)

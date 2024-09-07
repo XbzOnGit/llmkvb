@@ -1,4 +1,3 @@
-repeat_interval: 0.2
 repeatition: 4
 request_generator:
   content_generator:
@@ -33,7 +32,7 @@ request_generator:
     num_requests: 340
     provider: synthetic
     request_interval_generator:
-      provider: poisson
+      provider: fixed
       qps: 5.0
     request_length_generator:
       max_tokens: 3000
