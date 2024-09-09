@@ -27,6 +27,7 @@ class SyntheticRequestGenerator(BaseRequestGenerator):
                     self.config["content_generator"]["old_string_generator"]["start_selection_generator"])
         self.vocab_no_special_dict = {key: value for key, value in self.tokenizer.get_vocab().items() if value not in self.tokenizer.all_special_ids}
         self.vocab_no_special_string_list = list(self.vocab_no_special_dict.keys())
+        self.approximate_unique_token_length = 0
     def gen_random_tokens(self, length: int):
         random_tokens = []
         for _ in range(length):
@@ -62,6 +63,10 @@ class SyntheticRequestGenerator(BaseRequestGenerator):
             new_string = self.new_string_generator.generate_new_string(input_length=input_length)
             prefix_length = new_string[0]
             segments = new_string[1]
+            if pool_size == 0:
+                self.approximate_unique_token_length += input_length
+            else:
+                self.approximate_unique_token_length += input_length - prefix_length
             tokens = []
             # TODO: Pass more information into request_selection.
             if pool_size == 0:
@@ -109,6 +114,7 @@ class SyntheticRequestGenerator(BaseRequestGenerator):
             # Now tokens is input + output.
             retval.append(Request(arrived_at=arrived_at, tokens=tokens, output_length=output_length))
             # print(f"Request {len(retval)}: {arrived_at}, {len(tokens)}, {output_length}")
+        print(f"Approximate unique token length: {self.approximate_unique_token_length}")
         return retval
         
         
