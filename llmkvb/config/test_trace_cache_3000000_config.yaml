@@ -1,0 +1,48 @@
+metadata:
+  expected_total_reuse_ratio: 0.48999999999999994
+  expected_unique_prefix_token_length: 3000000
+request_generator:
+  content_generator:
+    new_string_generator:
+      max_following_segment_cnt: 4
+      no_reuse_probability: 0.3
+      prefix_ratio_generator:
+        left: 1.0
+        provider: uniform
+        right: 1.0
+      provider: segment_new_string
+      reuse_ratio_generator:
+        left: 0.6
+        provider: uniform
+        right: 0.8
+      segment_interval_generator:
+        left_per_length: 0
+        provider: uniform
+        right_per_length: 0.8
+      segment_length_generator:
+        left_per_length: 0
+        provider: uniform
+        right_per_length: 0.8
+    old_string_generator:
+      request_selection_generator:
+        provider: uniform
+      start_selection_generator:
+        provider: uniform
+  content_type: tokens
+  local_files_only: true
+  provider: synthetic
+  shape_generator:
+    num_requests: 1961
+    provider: synthetic
+    request_interval_generator:
+      provider: fixed
+      qps: 5.0
+    request_length_generator:
+      max_tokens: 2000
+      min_tokens: 4000
+      prefill_to_decode_ratio: 300
+      provider: uniform
+    seed: 42
+  tokenizer_name: bert-base-uncased
+  tokenizer_type: transformers
+seed: 42

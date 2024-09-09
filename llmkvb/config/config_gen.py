@@ -158,5 +158,10 @@ def config_gen(no_reuse_requests_ratio, min_reuse_ratio_inside_a_request,
 if __name__ == '__main__':
     # no reuse ratio is 0.3
     # 0.7 * ((0.6 + 0.8)/2) = 0.49
-    config_gen(0.3, 0.6, 0.8, "uniform", 3000000, 2000, 4000, 5.0, 42, 300, "test_trace_cache_3000000_config.yaml")
+    # The same total reuse ratio, different inside request reuse ratio.
+    # config_gen(0.3, 0.6, 0.8, "uniform", 3000000, 2000, 4000, 5.0, 42, 300, "test_trace_cache_3000000_config.yaml")
+    config_gen(0.4, 0.3, 0.5, "uniform", 3001000, 2000, 4000, 5.0, 61, 300, "3000000_0240.yaml")
+    config_gen(0.4, 0.8, 0.84, "uniform", 3000000, 2000, 4000, 5.0, 61, 300, "3000000_0492.yaml")
+    config_gen(0.4, 0.9, 1.0, "uniform", 3000000, 2000, 4000, 5.0, 61, 300, "3000000_0570.yaml")
+    config_gen(0.4, 1.0, 1.0, "uniform", 3000000, 2000, 4000, 5.0, 61, 300, "3000000_0600.yaml")
     

@@ -1,5 +1,5 @@
 #!/bin/bash
-config_names="trace_cache_30000 trace_cache_100000 trace_cache_1000000 trace_cache_3000000"
+config_names="3000000_0234 3000000_0474 3000000_0533 3000000_0551"
 for config_name in $config_names
 do
     echo ""

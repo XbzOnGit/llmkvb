@@ -30,11 +30,13 @@ def unique_prefix_token_length_and_reuse_ratio(trace_input_file, repeatition):
     total_hit_length = 0
     total_length = 0
     original_trace = []
+    trace_length = 0
     with open(trace_input_file, "r") as f:
         for line in f:
             req_dict = json.loads(line)
             tokens = req_dict["tokens"]
             original_trace.append(tokens)
+            trace_length += 1
 
     for _ in range(repeatition):
         for tokens in original_trace:
@@ -42,7 +44,8 @@ def unique_prefix_token_length_and_reuse_ratio(trace_input_file, repeatition):
             total_hit_length += hit_length
             total_length += len(tokens)
     reuse_ratio = total_hit_length / total_length
-    return trie.size, reuse_ratio
+    trace_length *= repeatition
+    return trie.size, reuse_ratio, trace_length
 
 if __name__ == '__main__':
     repeatition = 1
@@ -51,5 +54,5 @@ if __name__ == '__main__':
     elif len(sys.argv) == 3:
         repeatition = int(sys.argv[2])
     trace_input_file = sys.argv[1]
-    unique_length, reuse_ratio = unique_prefix_token_length_and_reuse_ratio(trace_input_file, repeatition)
-    print(f"unique_prefix_token_length: {unique_length}\nreuse_ratio: {reuse_ratio}")
+    unique_length, reuse_ratio, trace_length = unique_prefix_token_length_and_reuse_ratio(trace_input_file, repeatition)
+    print(f"unique_prefix_token_length: {unique_length}\nreuse_ratio: {reuse_ratio}\ntrace_length: {trace_length}")

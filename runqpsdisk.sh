@@ -60,7 +60,8 @@ run_exp() {
         --vllm_scheduler_config_disk_size 1024GB \
         --vllm_scheduler_config_disk_cpu_thput 4000MB/S \
         --vllm_scheduler_config_cpu_disk_thput 4000MB/S \
-        --vllm_scheduler_config_disk_cpu_prefetch)
+        --vllm_scheduler_config_disk_cpu_prefetch \
+        --vllm_scheduler_config_scheduler_aware_eviction)
     elif [ $paper_name == "ragcache" ]; then
         output=$(python -m llmkvb.main \
         --replica_config_device a40 \
@@ -76,7 +77,7 @@ run_exp() {
         --llmkvb_trace_input_file "$config_name".jsonl \
         --llmkvb_qps_scale "$qps_scale" \
         --vllm_scheduler_config_cache_lookup_type prefix \
-        --vllm_scheduler_config_cache_evict_type lru \
+        --vllm_scheduler_config_cache_evict_type pgdsf \
         --vllm_scheduler_config_cache_evict_op write \
         --vllm_scheduler_config_cpu_memory_size 64GB \
         --vllm_scheduler_config_gpu_cpu_thput 16GB/S \
