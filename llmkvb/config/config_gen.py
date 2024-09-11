@@ -1,64 +1,5 @@
 import yaml
 import math
-'''
-
-reuse_ratio:  
-reuse ratio(in one request) * (1 - no reuse ratio(across requests)).  
-
-unique prefix token length:  
-trace_length * mean_length_of_one_request * (no reuse ratio(across requests) + (1 - no reuse ratio(across requests))
-* (1 - reuse ratio(inside one request)).  
-).  
-'''
-'''
-request_generator:
-  content_generator:
-    new_string_generator:
-      max_following_segment_cnt: 4
-      no_reuse_probability: 0.0
-      prefix_ratio_generator:
-        left: 0.0
-        provider: uniform
-        right: 1.0
-      provider: segment_new_string
-      reuse_ratio_generator:
-        left: 0.7
-        provider: uniform
-        right: 0.9
-      segment_interval_generator:
-        left_per_length: 0
-        provider: uniform
-        right_per_length: 0.8
-      segment_length_generator:
-        left_per_length: 0
-        provider: uniform
-        right_per_length: 0.8
-    old_string_generator:
-      request_selection_generator:
-        provider: uniform
-      start_selection_generator:
-        provider: uniform
-  content_type: tokens
-  local_files_only: true
-  provider: synthetic
-  shape_generator:
-    num_requests: 1000
-    provider: synthetic
-    request_interval_generator:
-      provider: poisson
-      qps: 5.0
-    request_length_generator:
-      max_tokens: 4000
-      min_tokens: 4000
-      prefill_to_decode_ratio: 400
-      provider: uniform
-    seed: 42
-  tokenizer_name: bert-base-uncased
-  tokenizer_type: transformers
-seed: 42
-
-'''
-
 # Now length is always uniform, it can be fixed.
 # So only zipf is not supported.
 # FIXME: Only assume uniform or FIXED.
@@ -160,8 +101,9 @@ if __name__ == '__main__':
     # 0.7 * ((0.6 + 0.8)/2) = 0.49
     # The same total reuse ratio, different inside request reuse ratio.
     # config_gen(0.3, 0.6, 0.8, "uniform", 3000000, 2000, 4000, 5.0, 42, 300, "test_trace_cache_3000000_config.yaml")
-    config_gen(0.4, 0.3, 0.5, "uniform", 3001000, 2000, 4000, 5.0, 61, 300, "3000000_0240.yaml")
-    config_gen(0.4, 0.8, 0.84, "uniform", 3000000, 2000, 4000, 5.0, 61, 300, "3000000_0492.yaml")
-    config_gen(0.4, 0.9, 1.0, "uniform", 3000000, 2000, 4000, 5.0, 61, 300, "3000000_0570.yaml")
-    config_gen(0.4, 1.0, 1.0, "uniform", 3000000, 2000, 4000, 5.0, 61, 300, "3000000_0600.yaml")
+    # config_gen(0.4, 0.3, 0.5, "uniform", 3001000, 2000, 4000, 5.0, 61, 300, "3000000_0240.yaml")
+    # config_gen(0.4, 0.8, 0.84, "uniform", 3000000, 2000, 4000, 5.0, 61, 300, "3000000_0492.yaml")
+    # config_gen(0.4, 0.9, 1.0, "uniform", 3000000, 2000, 4000, 5.0, 61, 300, "3000000_0570.yaml")
+    # config_gen(0.4, 1.0, 1.0, "uniform", 3000000, 2000, 4000, 5.0, 61, 300, "3000000_0600.yaml")
+    config_gen(0.24, 1.0, 1.0, "uniform", 3010000, 3000, 3000, 5.0, 61, 300, "3000000_0750.yaml")
     
