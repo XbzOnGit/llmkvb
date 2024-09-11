@@ -5,7 +5,8 @@ if [ $# -ne 1 ]; then
     echo "Usage: $0 <config_name>"
     exit 1
 fi
-papers="baseline cachedattention ragcache"
+papers="baseline cachedattention ragcache cachegen"
+# papers="cachegen"
 throughput_list=""
 avg_ttft_list=""
 paper_name_list=""

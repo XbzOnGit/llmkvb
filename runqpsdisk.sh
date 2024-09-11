@@ -86,6 +86,32 @@ run_exp() {
         --vllm_scheduler_config_disk_cpu_thput 4000MB/S \
         --vllm_scheduler_config_cpu_disk_thput 4000MB/S \
         --vllm_scheduler_config_cache_reordering)
+    elif [ $paper_name == "cachegen" ]; then
+        output=$(python -m llmkvb.main \
+        --replica_config_device a40 \
+        --replica_config_network_device a40_pairwise_nvlink \
+        --replica_config_model_name meta-llama/Llama-2-7b-hf \
+        --cluster_config_num_replicas 1 \
+        --replica_config_tensor_parallel_size 1 \
+        --replica_config_num_pipeline_stages 1 \
+        --replica_scheduler_config_type vllm  \
+        --vllm_scheduler_config_batch_size_cap 256  \
+        --vllm_scheduler_config_max_tokens_in_batch 4096 \
+        --llmkvb_config "$config_dir_path$config_name.yaml" \
+        --llmkvb_trace_input_file "$config_name".jsonl \
+        --llmkvb_qps_scale "$qps_scale" \
+        --vllm_scheduler_config_cache_lookup_type prefix \
+        --vllm_scheduler_config_cache_evict_type lru \
+        --vllm_scheduler_config_cache_evict_op write \
+        --vllm_scheduler_config_cpu_memory_size 64GB \
+        --vllm_scheduler_config_gpu_cpu_thput 16GB/S \
+        --vllm_scheduler_config_cpu_gpu_thput 16GB/S \
+        --vllm_scheduler_config_disk_size 1024GB \
+        --vllm_scheduler_config_disk_cpu_thput 4000MB/S \
+        --vllm_scheduler_config_cpu_disk_thput 4000MB/S \
+        --vllm_scheduler_config_quant_kv \
+        --vllm_scheduler_config_quant_ratio 0.5 \
+        --vllm_scheduler_config_decode_place gpu)
     else
     echo "Invalid paper name"
     exit 1
