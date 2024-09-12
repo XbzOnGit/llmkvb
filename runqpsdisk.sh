@@ -32,7 +32,10 @@ run_exp() {
         --vllm_scheduler_config_cpu_gpu_thput 16GB/S \
         --vllm_scheduler_config_disk_size 1024GB \
         --vllm_scheduler_config_disk_cpu_thput 4000MB/S \
-        --vllm_scheduler_config_cpu_disk_thput 4000MB/S)    
+        --vllm_scheduler_config_cpu_disk_thput 4000MB/S \
+        --cluster_config_num_replicas 2 \
+        --global_scheduler_config_type locality \
+        --locality_global_scheduler_config_threshold_of_imbanlance_ratio 2.0)    
     # else if cachedattention
     elif [ $paper_name == "cachedattention" ]; then
         output=$(python -m llmkvb.main  \
@@ -61,7 +64,10 @@ run_exp() {
         --vllm_scheduler_config_disk_cpu_thput 4000MB/S \
         --vllm_scheduler_config_cpu_disk_thput 4000MB/S \
         --vllm_scheduler_config_disk_cpu_prefetch \
-        --vllm_scheduler_config_scheduler_aware_eviction)
+        --vllm_scheduler_config_scheduler_aware_eviction \
+        --cluster_config_num_replicas 2 \
+        --global_scheduler_config_type locality \
+        --locality_global_scheduler_config_threshold_of_imbanlance_ratio 2.0)
     elif [ $paper_name == "ragcache" ]; then
         output=$(python -m llmkvb.main \
         --replica_config_device a40 \
@@ -85,7 +91,10 @@ run_exp() {
         --vllm_scheduler_config_disk_size 1024GB \
         --vllm_scheduler_config_disk_cpu_thput 4000MB/S \
         --vllm_scheduler_config_cpu_disk_thput 4000MB/S \
-        --vllm_scheduler_config_cache_reordering)
+        --vllm_scheduler_config_cache_reordering \
+        --cluster_config_num_replicas 2 \
+        --global_scheduler_config_type locality \
+        --locality_global_scheduler_config_threshold_of_imbanlance_ratio 2.0)
     elif [ $paper_name == "cachegen" ]; then
         output=$(python -m llmkvb.main \
         --replica_config_device a40 \
@@ -110,8 +119,13 @@ run_exp() {
         --vllm_scheduler_config_disk_cpu_thput 4000MB/S \
         --vllm_scheduler_config_cpu_disk_thput 4000MB/S \
         --vllm_scheduler_config_quant_kv \
-        --vllm_scheduler_config_quant_ratio 0.5 \
-        --vllm_scheduler_config_decode_place gpu)
+        --vllm_scheduler_config_quant_ratio 0.25 \
+        --vllm_scheduler_config_decode_place gpu \
+        --vllm_scheduler_config_decode_speed 60000 \
+        --cluster_config_num_replicas 2 \
+        --global_scheduler_config_type locality \
+        --locality_global_scheduler_config_threshold_of_imbanlance_ratio 2.0 \
+        --cluster_config_p2p_bandwidth_between_nodes 2GB/S)
     else
     echo "Invalid paper name"
     exit 1
