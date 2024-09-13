@@ -64,10 +64,10 @@ run_exp() {
         --vllm_scheduler_config_disk_cpu_thput 4000MB/S \
         --vllm_scheduler_config_cpu_disk_thput 4000MB/S \
         --vllm_scheduler_config_disk_cpu_prefetch \
-        --vllm_scheduler_config_scheduler_aware_eviction \
         --cluster_config_num_replicas 2 \
         --global_scheduler_config_type locality \
         --locality_global_scheduler_config_threshold_of_imbanlance_ratio 2.0)
+        # Note that scheduler-eviction removed for speedup.
     elif [ $paper_name == "ragcache" ]; then
         output=$(python -m llmkvb.main \
         --replica_config_device a40 \

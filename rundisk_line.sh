@@ -1,5 +1,5 @@
 #!/bin/bash
-papers="baseline cachedattention cachegen"
+papers="baseline ragcache cachedattention cachegen"
 # assert paper len > 0
 if [ -z "$papers" ]; then
     echo "Please specify the papers to run"
