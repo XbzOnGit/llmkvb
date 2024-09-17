@@ -1,5 +1,6 @@
 from llmkvb.request_generator.content_generator.old_string.uniform_request_selection import UniformRequestSelectionGenerator
 from llmkvb.request_generator.content_generator.old_string.latest_request_selection import LatestRequestSelectionGenerator
+from llmkvb.request_generator.content_generator.old_string.fixed_distance_request_selection import FixedDistanceRequestSelectionGenerator
 from llmkvb.kvtypes import RequestSelectionGeneratorType
 from llmkvb.utils.base_registry import BaseRegistry
 
@@ -10,3 +11,4 @@ class RequestSelectionGeneratorRegistry(BaseRegistry):
 
 RequestSelectionGeneratorRegistry.register(RequestSelectionGeneratorType.UNIFORM, UniformRequestSelectionGenerator)
 RequestSelectionGeneratorRegistry.register(RequestSelectionGeneratorType.LATEST, LatestRequestSelectionGenerator)
+RequestSelectionGeneratorRegistry.register(RequestSelectionGeneratorType.FIXED_DISTANCE, FixedDistanceRequestSelectionGenerator)

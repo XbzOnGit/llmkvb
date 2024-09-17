@@ -32,6 +32,7 @@ class SyntheticRequestGenerator(BaseRequestGenerator):
         self.doc_token_size = 0 if "doc_token_size" not in config else config["doc_token_size"]
         if self.reorder_docs_ratio > 0:
             assert self.doc_token_size > 0 # Should be a multiple of block size.
+        self.first_no_reuse = 0 if "first_no_reuse" not in config else config["first_no_reuse"]
     def gen_random_tokens(self, length: int):
         random_tokens = []
         for _ in range(length):
@@ -73,7 +74,7 @@ class SyntheticRequestGenerator(BaseRequestGenerator):
                 self.approximate_unique_token_length += input_length - prefix_length
             tokens = []
             # TODO: Pass more information into request_selection.
-            if pool_size == 0:
+            if pool_size == 0 or pool_size < self.first_no_reuse:
                 # All tokens are random.
                 tokens.extend(self.gen_random_tokens(input_length))
             else:
@@ -120,8 +121,9 @@ class SyntheticRequestGenerator(BaseRequestGenerator):
                 before_len = len(tokens)
                 sample_reorder_or_not = random.random()
                 if sample_reorder_or_not < self.reorder_docs_ratio:
+                    # print(f"Reorder from {tokens}")
                     # Divide into docs.
-                    docs_list = [tokens[i:i + self.doc_token_size] for i in range(0, len(tokens), self.doc_token_size)]
+                    docs_list = [tokens[i:i + self.doc_token_size] for i in range(0, len(tokens), self.doc_token_size) if i + self.doc_token_size < len(tokens)]
                     left_with_tokens = tokens[len(docs_list) * self.doc_token_size:]
                     if len(docs_list) > 1:
                         random.shuffle(docs_list)
@@ -129,7 +131,9 @@ class SyntheticRequestGenerator(BaseRequestGenerator):
                         for doc in docs_list:
                             tokens.extend(doc)
                         tokens.extend(left_with_tokens)
+                    # print(f" to {tokens}")
                 after_len = len(tokens)
+                
                 assert before_len == after_len
             retval.append(Request(arrived_at=arrived_at, tokens=tokens, output_length=output_length))
             # print(f"Request {len(retval)}: {arrived_at}, {len(tokens)}, {output_length}")
