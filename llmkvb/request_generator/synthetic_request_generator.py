@@ -28,6 +28,10 @@ class SyntheticRequestGenerator(BaseRequestGenerator):
         self.vocab_no_special_dict = {key: value for key, value in self.tokenizer.get_vocab().items() if value not in self.tokenizer.all_special_ids}
         self.vocab_no_special_string_list = list(self.vocab_no_special_dict.keys())
         self.approximate_unique_token_length = 0
+        self.reorder_docs_ratio = 0.0 if "reorder_docs_ratio" not in config else config["reorder_docs_ratio"]
+        self.doc_token_size = 0 if "doc_token_size" not in config else config["doc_token_size"]
+        if self.reorder_docs_ratio > 0:
+            assert self.doc_token_size > 0 # Should be a multiple of block size.
     def gen_random_tokens(self, length: int):
         random_tokens = []
         for _ in range(length):
@@ -112,6 +116,21 @@ class SyntheticRequestGenerator(BaseRequestGenerator):
             self.request_selection_generator.update()
             pool_size += 1
             # Now tokens is input + output.
+            if self.reorder_docs_ratio > 0:
+                before_len = len(tokens)
+                sample_reorder_or_not = random.random()
+                if sample_reorder_or_not < self.reorder_docs_ratio:
+                    # Divide into docs.
+                    docs_list = [tokens[i:i + self.doc_token_size] for i in range(0, len(tokens), self.doc_token_size)]
+                    left_with_tokens = tokens[len(docs_list) * self.doc_token_size:]
+                    if len(docs_list) > 1:
+                        random.shuffle(docs_list)
+                        tokens = []
+                        for doc in docs_list:
+                            tokens.extend(doc)
+                        tokens.extend(left_with_tokens)
+                after_len = len(tokens)
+                assert before_len == after_len
             retval.append(Request(arrived_at=arrived_at, tokens=tokens, output_length=output_length))
             # print(f"Request {len(retval)}: {arrived_at}, {len(tokens)}, {output_length}")
         print(f"Approximate unique token length: {self.approximate_unique_token_length}")

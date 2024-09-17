@@ -1,8 +1,10 @@
 import sys
+import os
 from matplotlib import pyplot as plt
 if __name__ == '__main__':
-    assert len(sys.argv) == 2, 'Usage: python rundisk_line_plot.py <param_list>'
-    param_list = sys.argv[1]
+    assert len(sys.argv) == 3, 'Usage: python rundisk_line_plot.py <output_dir> <param_list>'
+    output_dir = sys.argv[1]
+    param_list = sys.argv[2]
     print(f"param_list: {param_list}")
     paper_name_end = param_list.find(';')
     paper_names = param_list[:paper_name_end].split('~')
@@ -30,11 +32,12 @@ if __name__ == '__main__':
     
     for i in range(len(paper_names)):
         plt.plot(general_qps_list[i], general_throughput_list[i], label=paper_names[i])
+    os.makedirs(output_dir, exist_ok=True)
     plt.title("QPS-Throughput")
     plt.xlabel("QPS")
     plt.ylabel("Throughput req/s")
     plt.legend()
-    plt.savefig("qps_throughput.png")
+    plt.savefig(f"./{output_dir}/qps_throughput.png")
     plt.clf()
     for i in range(len(paper_names)):
         plt.plot(general_qps_list[i], general_avg_ttft_list[i], label=paper_names[i])
@@ -42,6 +45,6 @@ if __name__ == '__main__':
     plt.xlabel("QPS")
     plt.ylabel("AvgTTFT second")
     plt.legend()
-    plt.savefig("qps_avg_ttft.png")
+    plt.savefig(f"./{output_dir}/qps_avg_ttft.png")
     plt.clf()
 

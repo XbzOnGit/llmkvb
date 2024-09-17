@@ -16,13 +16,15 @@ run_exp() {
         output=$(python -m llmkvb.main \
         --replica_config_device a40 \
         --replica_config_network_device a40_pairwise_nvlink \
-        --replica_config_model_name meta-llama/Llama-2-7b-hf \
+        --replica_config_model_name meta-llama/Meta-Llama-3-8B \
         --cluster_config_num_replicas 1 \
         --replica_config_tensor_parallel_size 1 \
         --replica_config_num_pipeline_stages 1 \
         --replica_scheduler_config_type vllm  \
         --vllm_scheduler_config_batch_size_cap 256  \
-        --vllm_scheduler_config_max_tokens_in_batch 4096 \
+        --vllm_scheduler_config_max_tokens_in_batch 16384 \
+        --random_forrest_execution_time_predictor_config_prediction_max_prefill_chunk_size 16384 \
+        --random_forrest_execution_time_predictor_config_prediction_max_tokens_per_request 16384 \
         --llmkvb_config "$config_dir_path$config_name.yaml" \
         --llmkvb_trace_input_file "$config_name".jsonl \
         --llmkvb_qps_scale "$qps_scale" \
@@ -32,24 +34,24 @@ run_exp() {
         --vllm_scheduler_config_cpu_memory_size 64GB \
         --vllm_scheduler_config_gpu_cpu_thput 16GB/S \
         --vllm_scheduler_config_cpu_gpu_thput 16GB/S \
-        --vllm_scheduler_config_disk_size 1024GB \
+        --vllm_scheduler_config_disk_size 256GB \
         --vllm_scheduler_config_disk_cpu_thput 4000MB/S \
         --vllm_scheduler_config_cpu_disk_thput 4000MB/S \
-        --cluster_config_num_replicas 2 \
-        --global_scheduler_config_type locality \
-        --locality_global_scheduler_config_threshold_of_imbanlance_ratio 2.0)    
+        --cluster_config_num_replicas 2)    
     # else if cachedattention
     elif [ $paper_name == "cachedattention" ]; then
         output=$(python -m llmkvb.main  \
         --replica_config_device a40 \
         --replica_config_network_device a40_pairwise_nvlink \
-        --replica_config_model_name meta-llama/Llama-2-7b-hf \
+        --replica_config_model_name meta-llama/Meta-Llama-3-8B \
         --cluster_config_num_replicas 1 \
         --replica_config_tensor_parallel_size 1 \
         --replica_config_num_pipeline_stages 1 \
         --replica_scheduler_config_type vllm  \
         --vllm_scheduler_config_batch_size_cap 256  \
-        --vllm_scheduler_config_max_tokens_in_batch 4096 \
+        --vllm_scheduler_config_max_tokens_in_batch 16384 \
+        --random_forrest_execution_time_predictor_config_prediction_max_prefill_chunk_size 16384 \
+        --random_forrest_execution_time_predictor_config_prediction_max_tokens_per_request 16384 \
         --llmkvb_config "$config_dir_path$config_name.yaml" \
         --llmkvb_trace_input_file "$config_name".jsonl \
         --llmkvb_qps_scale "$qps_scale" \
@@ -62,25 +64,26 @@ run_exp() {
         --vllm_scheduler_config_layer_pipeline \
         --vllm_scheduler_config_read_pipeline_buffer \
         --vllm_scheduler_config_gpu_write_through_cpu \
-        --vllm_scheduler_config_disk_size 1024GB \
+        --vllm_scheduler_config_cpu_sysbuf_fraction 0.3 \
+        --vllm_scheduler_config_disk_size 256GB \
         --vllm_scheduler_config_disk_cpu_thput 4000MB/S \
         --vllm_scheduler_config_cpu_disk_thput 4000MB/S \
         --vllm_scheduler_config_disk_cpu_prefetch \
-        --cluster_config_num_replicas 2 \
-        --global_scheduler_config_type locality \
-        --locality_global_scheduler_config_threshold_of_imbanlance_ratio 2.0)
+        --cluster_config_num_replicas 2)
         # Note that scheduler-eviction removed for speedup.
     elif [ $paper_name == "ragcache" ]; then
         output=$(python -m llmkvb.main \
         --replica_config_device a40 \
         --replica_config_network_device a40_pairwise_nvlink \
-        --replica_config_model_name meta-llama/Llama-2-7b-hf \
+        --replica_config_model_name meta-llama/Meta-Llama-3-8B \
         --cluster_config_num_replicas 1 \
         --replica_config_tensor_parallel_size 1 \
         --replica_config_num_pipeline_stages 1 \
         --replica_scheduler_config_type vllm  \
         --vllm_scheduler_config_batch_size_cap 256  \
-        --vllm_scheduler_config_max_tokens_in_batch 4096 \
+        --vllm_scheduler_config_max_tokens_in_batch 16384 \
+        --random_forrest_execution_time_predictor_config_prediction_max_prefill_chunk_size 16384 \
+        --random_forrest_execution_time_predictor_config_prediction_max_tokens_per_request 16384 \
         --llmkvb_config "$config_dir_path$config_name.yaml" \
         --llmkvb_trace_input_file "$config_name".jsonl \
         --llmkvb_qps_scale "$qps_scale" \
@@ -90,24 +93,24 @@ run_exp() {
         --vllm_scheduler_config_cpu_memory_size 64GB \
         --vllm_scheduler_config_gpu_cpu_thput 16GB/S \
         --vllm_scheduler_config_cpu_gpu_thput 16GB/S \
-        --vllm_scheduler_config_disk_size 1024GB \
+        --vllm_scheduler_config_disk_size 256GB \
         --vllm_scheduler_config_disk_cpu_thput 4000MB/S \
         --vllm_scheduler_config_cpu_disk_thput 4000MB/S \
         --vllm_scheduler_config_cache_reordering \
-        --cluster_config_num_replicas 2 \
-        --global_scheduler_config_type locality \
-        --locality_global_scheduler_config_threshold_of_imbanlance_ratio 2.0)
+        --cluster_config_num_replicas 2)
     elif [ $paper_name == "cachegen" ]; then
         output=$(python -m llmkvb.main \
         --replica_config_device a40 \
         --replica_config_network_device a40_pairwise_nvlink \
-        --replica_config_model_name meta-llama/Llama-2-7b-hf \
+        --replica_config_model_name meta-llama/Meta-Llama-3-8B \
         --cluster_config_num_replicas 1 \
         --replica_config_tensor_parallel_size 1 \
         --replica_config_num_pipeline_stages 1 \
         --replica_scheduler_config_type vllm  \
         --vllm_scheduler_config_batch_size_cap 256  \
-        --vllm_scheduler_config_max_tokens_in_batch 4096 \
+        --vllm_scheduler_config_max_tokens_in_batch 16384 \
+        --random_forrest_execution_time_predictor_config_prediction_max_prefill_chunk_size 16384 \
+        --random_forrest_execution_time_predictor_config_prediction_max_tokens_per_request 16384 \
         --llmkvb_config "$config_dir_path$config_name.yaml" \
         --llmkvb_trace_input_file "$config_name".jsonl \
         --llmkvb_qps_scale "$qps_scale" \
@@ -117,7 +120,7 @@ run_exp() {
         --vllm_scheduler_config_cpu_memory_size 64GB \
         --vllm_scheduler_config_gpu_cpu_thput 16GB/S \
         --vllm_scheduler_config_cpu_gpu_thput 16GB/S \
-        --vllm_scheduler_config_disk_size 1024GB \
+        --vllm_scheduler_config_disk_size 256GB \
         --vllm_scheduler_config_disk_cpu_thput 4000MB/S \
         --vllm_scheduler_config_cpu_disk_thput 4000MB/S \
         --vllm_scheduler_config_quant_kv \
@@ -125,9 +128,34 @@ run_exp() {
         --vllm_scheduler_config_decode_place gpu \
         --vllm_scheduler_config_decode_speed 60000 \
         --cluster_config_num_replicas 2 \
-        --global_scheduler_config_type locality \
-        --locality_global_scheduler_config_threshold_of_imbanlance_ratio 2.0 \
         --cluster_config_p2p_bandwidth_between_nodes 2GB/S)
+    elif [ $paper_name == "cacheblend" ]; then
+        output=$(python -m llmkvb.main \
+        --replica_config_device a40 \
+        --replica_config_network_device a40_pairwise_nvlink \
+        --replica_config_model_name meta-llama/Meta-Llama-3-8B \
+        --cluster_config_num_replicas 1 \
+        --replica_config_tensor_parallel_size 1 \
+        --replica_config_num_pipeline_stages 1 \
+        --replica_scheduler_config_type vllm  \
+        --vllm_scheduler_config_batch_size_cap 256  \
+        --vllm_scheduler_config_max_tokens_in_batch 16384 \
+        --random_forrest_execution_time_predictor_config_prediction_max_prefill_chunk_size 16384 \
+        --random_forrest_execution_time_predictor_config_prediction_max_tokens_per_request 16384 \
+        --llmkvb_config "$config_dir_path$config_name.yaml" \
+        --llmkvb_trace_input_file "$config_name".jsonl \
+        --llmkvb_qps_scale "$qps_scale" \
+        --vllm_scheduler_config_cache_lookup_type prefix \
+        --vllm_scheduler_config_cache_evict_type lru \
+        --vllm_scheduler_config_cache_evict_op write \
+        --vllm_scheduler_config_cpu_memory_size 64GB \
+        --vllm_scheduler_config_gpu_cpu_thput 16GB/S \
+        --vllm_scheduler_config_cpu_gpu_thput 16GB/S \
+        --vllm_scheduler_config_disk_size 256GB \
+        --vllm_scheduler_config_disk_cpu_thput 4000MB/S \
+        --vllm_scheduler_config_cpu_disk_thput 4000MB/S \
+        --cluster_config_num_replicas 2 \
+        --vllm_scheduler_config_allow_reorder_kv_blocks)
     else
     echo "Invalid paper name"
     exit 1
@@ -189,6 +217,9 @@ done
 echo "qps_list: $qps_list"
 echo "throughput_list: $throughput_list"
 echo "avg_ttft_list: $avg_ttft_list"
+echo "qps_list: $qps_list" >> dump_$config_name_$paper_name.txt
+echo "throughput_list: $throughput_list" >> dump_$config_name_$paper_name.txt
+echo "avg_ttft_list: $avg_ttft_list" >> dump_$config_name_$paper_name.txt
 
 
 

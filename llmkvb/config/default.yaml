@@ -2,16 +2,16 @@ request_generator:
   content_generator:
     new_string_generator:
       max_following_segment_cnt: 4
-      no_reuse_probability: 0.0
+      no_reuse_probability: 0.2
       prefix_ratio_generator:
-        left: 0.0
+        left: 1.0
         provider: uniform
         right: 1.0
       provider: segment_new_string
       reuse_ratio_generator:
-        left: 0.7
+        left: 0.9375
         provider: uniform
-        right: 0.9
+        right: 0.9375
       segment_interval_generator:
         left_per_length: 0
         provider: uniform
@@ -35,9 +35,9 @@ request_generator:
       provider: poisson
       qps: 5.0
     request_length_generator:
-      max_tokens: 4000
-      min_tokens: 4000
-      prefill_to_decode_ratio: 400
+      max_tokens: 15000
+      min_tokens: 15000
+      prefill_to_decode_ratio: 1500
       provider: uniform
     seed: 42
   tokenizer_name: bert-base-uncased
