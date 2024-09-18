@@ -29,7 +29,7 @@ request_generator:
   local_files_only: true
   provider: synthetic
   shape_generator:
-    num_requests: 1000
+    num_requests: 803
     provider: synthetic
     request_interval_generator:
       provider: poisson
@@ -43,3 +43,7 @@ request_generator:
   tokenizer_name: bert-base-uncased
   tokenizer_type: transformers
 seed: 42
+
+# prefix reuse ratio generally: 0.8 * 0.9375 = 0.75
+# size 3045320
+# copy pattern: uniform

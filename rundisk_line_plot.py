@@ -3,9 +3,14 @@ import os
 from matplotlib import pyplot as plt
 if __name__ == '__main__':
     assert len(sys.argv) == 3, 'Usage: python rundisk_line_plot.py <output_dir> <param_list>'
+    markers = ['o', 's', 'D', '^', 'v', 'p', 'P', '*', 'X', 'H']
     output_dir = sys.argv[1]
+    os.makedirs(output_dir, exist_ok=True)
     param_list = sys.argv[2]
+    dump_file = output_dir + "/param_list.txt"
     print(f"param_list: {param_list}")
+    with open(dump_file, 'w') as f:
+        f.write(param_list)
     paper_name_end = param_list.find(';')
     paper_names = param_list[:paper_name_end].split('~')
     param_list = param_list[paper_name_end+1:]
@@ -30,21 +35,21 @@ if __name__ == '__main__':
         general_throughput_list.append(throughput_list)
         general_avg_ttft_list.append(avg_ttft_list)
     
+    last_output_dir = output_dir.split('/')[-1]
+    plt.figure(figsize=(20,10))
+    plt.suptitle(f"{last_output_dir}")
+    plt.subplot(1, 2, 1)
     for i in range(len(paper_names)):
-        plt.plot(general_qps_list[i], general_throughput_list[i], label=paper_names[i])
-    os.makedirs(output_dir, exist_ok=True)
-    plt.title("QPS-Throughput")
+        # Add different markers.
+        plt.plot(general_qps_list[i], general_throughput_list[i], label=paper_names[i], marker=markers[i])
     plt.xlabel("QPS")
     plt.ylabel("Throughput req/s")
     plt.legend()
-    plt.savefig(f"./{output_dir}/qps_throughput.png")
-    plt.clf()
+    plt.subplot(1, 2, 2)
     for i in range(len(paper_names)):
-        plt.plot(general_qps_list[i], general_avg_ttft_list[i], label=paper_names[i])
-    plt.title("QPS-AvgTTFT")
+        plt.plot(general_qps_list[i], general_avg_ttft_list[i], label=paper_names[i], marker=markers[i])
     plt.xlabel("QPS")
     plt.ylabel("AvgTTFT second")
     plt.legend()
-    plt.savefig(f"./{output_dir}/qps_avg_ttft.png")
-    plt.clf()
+    plt.savefig(f"./{output_dir}/qps_throughput_avg_ttft_original.png")
 
