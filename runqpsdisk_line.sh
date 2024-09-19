@@ -1,6 +1,4 @@
 #!/bin/bash
-# 
-#!/bin/bash
 # This script runs a one paper x one setup.
 # Which is one bar if plotting throughput.
 # Fixing setup to GPU+CPU+DISK.
