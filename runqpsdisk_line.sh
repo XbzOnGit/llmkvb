@@ -61,7 +61,7 @@ run_exp() {
         --vllm_scheduler_config_cpu_gpu_thput 16GB/S \
         --vllm_scheduler_config_layer_pipeline \
         --vllm_scheduler_config_read_pipeline_buffer \
-        --vllm_scheduler_config_gpu_write_through_cpu \
+        --vllm_scheduler_config_gpu_write_through_cpu async \
         --vllm_scheduler_config_cpu_sysbuf_fraction 0.3 \
         --vllm_scheduler_config_disk_size 256GB \
         --vllm_scheduler_config_disk_cpu_thput 4000MB/S \
