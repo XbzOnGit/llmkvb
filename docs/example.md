@@ -12,6 +12,11 @@
 2. ```python -m pip install -r requirements.txt```  
 3. remove source .venv/bin/activate from the scripts in this repo.  
 ## Vary on copy pattern to show the benefit of RAGCache
+Run a fast example.  
+cd into root of the repo.  
+```
+./setup_and_example.sh
+```
 With a new requests sharing prefix with old ones, they can differ in which old request to choose.  
 ragcache_low chooses from latest requests, while ragcache_high chooses from a distant request(and make the trace a large working set replayed for 3 times).  
 For latest copy pattern, cache-reordering of ragcache has little effect, while for the large working set replayed one, it should benefit much.  
@@ -118,7 +123,6 @@ python -m llmkvb.main \
         --vllm_scheduler_config_cache_lookup_type prefix \
         --vllm_scheduler_config_cache_evict_type lru \
         --vllm_scheduler_config_cache_evict_op write \
-        --vllm_scheduler_config_gpu_write_through_cpu sync \
         --vllm_scheduler_config_cpu_memory_size 64GB \
         --vllm_scheduler_config_gpu_cpu_thput 16GB/S \
         --vllm_scheduler_config_cpu_gpu_thput 16GB/S \
