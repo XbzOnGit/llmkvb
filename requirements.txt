@@ -9,3 +9,4 @@ matplotlib
 seaborn
 fasteners
 transformers
+pyyaml

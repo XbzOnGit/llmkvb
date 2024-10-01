@@ -1,11 +1,16 @@
 # Examples
-## Env setup with venv
+## Env setup
+### Use venv
 1. Ensure that you have Python 3.10 installed on your system. Refer <https://www.bitecode.dev/p/installing-python-the-bare-minimum>
 2. `cd` into the repository root
 3. Create a virtual environment using `venv` module using `python3.10 -m venv .venv`
 4. Activate the virtual environment using `source .venv/bin/activate`
 5. Install the dependencies using `python -m pip install -r requirements.txt`
 6. Run `deactivate` to deactivate the virtual environment
+### Use conda
+1. conda create a python3.10 environment.  
+2. ```python -m pip install -r requirements.txt```  
+3. remove source .venv/bin/activate from the scripts in this repo.  
 ## Vary on copy pattern to show RAGCache
 1. Write two yamls in config folder.  
 Although the reuse_ratio = possible_reused_tokens / total_tokens are the same, they differ in how those tokens are distributed.  
@@ -73,7 +78,7 @@ request_generator:
   tokenizer_type: transformers
 seed: 39
 ```
-2. Run gen_traces.sh from root of repo.  
+1. Run gen_traces.sh from root of repo.  
 ```
 #!/bin/bash
 
@@ -90,6 +95,7 @@ done
 ```
 3. Launch experiments and plot the graph.  
 To launch one.  
+On the first run, it will train the time predictor, which can take some time.  
 ```
 python -m llmkvb.main \
         --replica_config_device a40 \
