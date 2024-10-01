@@ -126,8 +126,10 @@ run_exp() {
         --vllm_scheduler_config_decode_place gpu \
         --vllm_scheduler_config_decode_speed 60000 \
         --vllm_scheduler_config_encode_speed 60000 \
+        --vllm_scheduler_config_gpu_write_through_cpu sync \
         --cluster_config_num_replicas 2 \
         --cluster_config_p2p_bandwidth_between_nodes 2GB/S)
+        # Now cachegen writes through, but not pipelined like cachedattention.
     elif [ $paper_name == "cacheblend" ]; then
         output=$(python -m llmkvb.main \
         --replica_config_device a40 \

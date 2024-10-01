@@ -1,4 +1,5 @@
 import yaml
+import time
 import argparse
 from llmkvb.utils.random import set_seeds
 from llmkvb.request_generator.request_generator_registry import RequestGeneratorRegistry
@@ -22,6 +23,7 @@ def parse_args():
     return args
 
 def main():
+    t1 = time.perf_counter()
     config = None
     args = parse_args()
     with open(args.llmkvb_config, "r") as f:
@@ -81,9 +83,16 @@ def main():
                                       tokens=reqlist[i].tokens, output_length=reqlist[i].output_length))
         base_arrive_time += max_arrival_time
         # print(f"base_arrive_time of {_}: {base_arrive_time}")
+    t2 = time.perf_counter()
+    print(f"Request generation/load clock time: {t2 - t1} seconds")
     if args.llmkvb_executor is not None:
         executor = ExecutorRegistry.get_from_str(args.llmkvb_executor)
+        t1 = time.perf_counter()
         executor.execute(reqlist)
+        t2 = time.perf_counter()
+        print(f"Executor clock time: {t2 - t1} seconds")
+    else:
+        print(f"Executor clock time: 0.0 seconds")
 
 
 if __name__ == "__main__":

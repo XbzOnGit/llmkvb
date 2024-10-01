@@ -11,7 +11,10 @@
 1. conda create a python3.10 environment.  
 2. ```python -m pip install -r requirements.txt```  
 3. remove source .venv/bin/activate from the scripts in this repo.  
-## Vary on copy pattern to show RAGCache
+## Vary on copy pattern to show the benefit of RAGCache
+With a new requests sharing prefix with old ones, they can differ in which old request to choose.  
+ragcache_low chooses from latest requests, while ragcache_high chooses from a distant request(and make the trace a large working set replayed for 3 times).  
+For latest copy pattern, cache-reordering of ragcache has little effect, while for the large working set replayed one, it should benefit much.  
 1. Write two yamls in config folder.  
 Although the reuse_ratio = possible_reused_tokens / total_tokens are the same, they differ in how those tokens are distributed.  
 In ragcache_low, 
@@ -78,7 +81,7 @@ request_generator:
   tokenizer_type: transformers
 seed: 39
 ```
-1. Run gen_traces.sh from root of repo.  
+2. Run gen_traces.sh from root of repo.  
 ```
 #!/bin/bash
 
@@ -130,4 +133,3 @@ exp="ragcache_low ragcache_high"
 ./rundisk_line.sh $exp ./exps/"$exp"_yymmdd 0.1 0.2 5
 ```
 Currently plotting a graph with 5 papers and 5 points of qps can take about half an hour.  
-Need a performance fix.  
