@@ -9,7 +9,7 @@ request_generator:
     old_string_generator:
       request_selection_generator:
         provider: latest
-  local_files_only: true
+  local_files_only: false
   provider: synthetic
   shape_generator:
     num_requests: 600

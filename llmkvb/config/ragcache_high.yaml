@@ -10,7 +10,7 @@ request_generator:
       request_selection_generator:
         provider: fixed_distance
         distance: 200
-  local_files_only: true
+  local_files_only: false
   provider: synthetic
   shape_generator:
     num_requests: 600
