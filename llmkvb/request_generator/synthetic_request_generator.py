@@ -14,17 +14,21 @@ class SyntheticRequestGenerator(BaseRequestGenerator):
         self.shape_generator = \
             request_shape_generator_registry.RequestShapeGeneratorRegistry.get_from_str(self.config["shape_generator"]["provider"]\
                                                                                         , self.config["shape_generator"])
+        new_string_generator_name = self.config["content_generator"]["new_string_generator"].get("provider", "segment_new_string")
         self.new_string_generator = \
-            new_string_registry.NewStringGeneratorRegistry.get_from_str(self.config["content_generator"]["new_string_generator"]["provider"], \
+            new_string_registry.NewStringGeneratorRegistry.get_from_str(new_string_generator_name, \
                                                                         self.config["content_generator"]["new_string_generator"])
         self.request_selection_generator = \
             request_selection_registry.RequestSelectionGeneratorRegistry.get_from_str(\
                 self.config["content_generator"]["old_string_generator"]["request_selection_generator"]["provider"], \
                     self.config["content_generator"]["old_string_generator"]["request_selection_generator"])
-        self.start_selection_generator = \
-            start_selection_registry.StartSelectionGeneratorRegistry.get_from_str(\
-                self.config["content_generator"]["old_string_generator"]["start_selection_generator"]["provider"], \
-                    self.config["content_generator"]["old_string_generator"]["start_selection_generator"])
+        if "start_selection_generator" not in self.config["content_generator"]["old_string_generator"]:
+            self.start_selection_generator = None
+        else:
+            self.start_selection_generator = \
+                start_selection_registry.StartSelectionGeneratorRegistry.get_from_str(\
+                    self.config["content_generator"]["old_string_generator"]["start_selection_generator"]["provider"], \
+                        self.config["content_generator"]["old_string_generator"]["start_selection_generator"])
         self.vocab_no_special_dict = {key: value for key, value in self.tokenizer.get_vocab().items() if value not in self.tokenizer.all_special_ids}
         self.vocab_no_special_string_list = list(self.vocab_no_special_dict.keys())
         self.approximate_unique_token_length = 0
@@ -68,7 +72,7 @@ class SyntheticRequestGenerator(BaseRequestGenerator):
             new_string = self.new_string_generator.generate_new_string(input_length=input_length)
             prefix_length = new_string[0]
             segments = new_string[1]
-            if pool_size == 0:
+            if pool_size == 0 or pool_size < self.first_no_reuse:
                 self.approximate_unique_token_length += input_length
             else:
                 self.approximate_unique_token_length += input_length - prefix_length

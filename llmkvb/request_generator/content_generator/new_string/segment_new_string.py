@@ -24,19 +24,42 @@ class SegmentNewStringGenerator(BaseNewStringGenerator):
             self._config["reuse_ratio_generator"]["provider"], self._config["reuse_ratio_generator"])
         self.reuse_ratio_left = self._config["reuse_ratio_generator"]["left"]
         self.reuse_ratio_right = self._config["reuse_ratio_generator"]["right"]
-        self.prefix_ratio_generator = PrefixRatioGeneratorRegistry.get_from_str(\
-            self._config["prefix_ratio_generator"]["provider"], self._config["prefix_ratio_generator"])
-        self.prefix_ratio_left = self._config["prefix_ratio_generator"]["left"]
-        self.prefix_ratio_right = self._config["prefix_ratio_generator"]["right"]
-        self.segment_length_generator = SegmentLengthGeneratorRegistry.get_from_str(\
-            self._config["segment_length_generator"]["provider"], self._config["segment_length_generator"])
-        self.segment_length_left_per_length = self._config["segment_length_generator"]["left_per_length"]
-        self.segment_length_right_per_length = self._config["segment_length_generator"]["right_per_length"]
-        self.segment_interval_generator = SegmentIntervalGeneratorRegistry.get_from_str(\
-            self._config["segment_interval_generator"]["provider"], self._config["segment_interval_generator"])
-        self.segment_interval_left_per_length = self._config["segment_interval_generator"]["left_per_length"]
-        self.segment_interval_right_per_length = self._config["segment_interval_generator"]["right_per_length"]
-        self.max_following_segment_cnt = self._config["max_following_segment_cnt"]
+        if "prefix_ratio_generator" not in self._config:
+            default_prefix_config = {"provider": "uniform", "left": 1.0, "right": 1.0}
+            self.prefix_ratio_generator = PrefixRatioGeneratorRegistry.get_from_str(default_prefix_config["provider"],
+                                                                                     default_prefix_config)
+            self.prefix_ratio_left = default_prefix_config["left"]
+            self.prefix_ratio_right = default_prefix_config["right"]
+        else:
+            self.prefix_ratio_generator = PrefixRatioGeneratorRegistry.get_from_str(\
+                self._config["prefix_ratio_generator"]["provider"], self._config["prefix_ratio_generator"])
+            self.prefix_ratio_left = self._config["prefix_ratio_generator"]["left"]
+            self.prefix_ratio_right = self._config["prefix_ratio_generator"]["right"]
+        if "segment_length_generator" not in self._config:
+            default_segment_length_config = {"provider": "uniform", "left_per_length": 0, "right_per_length": 0.8}
+            self.segment_length_generator = SegmentLengthGeneratorRegistry.get_from_str(
+                default_segment_length_config["provider"],
+                default_segment_length_config)
+            self.segment_length_left_per_length = default_segment_length_config["left_per_length"]
+            self.segment_length_right_per_length = default_segment_length_config["right_per_length"]
+        else:
+            self.segment_length_generator = SegmentLengthGeneratorRegistry.get_from_str(\
+                self._config["segment_length_generator"]["provider"], self._config["segment_length_generator"])
+            self.segment_length_left_per_length = self._config["segment_length_generator"]["left_per_length"]
+            self.segment_length_right_per_length = self._config["segment_length_generator"]["right_per_length"]
+        if "segment_interval_generator" not in self._config:
+            default_segment_interval_config = {"provider": "uniform", "left_per_length": 0, "right_per_length": 0.8}
+            self.segment_interval_generator = SegmentIntervalGeneratorRegistry.get_from_str(
+                default_segment_interval_config["provider"],
+                default_segment_interval_config)
+            self.segment_interval_left_per_length = default_segment_interval_config["left_per_length"]
+            self.segment_interval_right_per_length = default_segment_interval_config["right_per_length"]
+        else:
+            self.segment_interval_generator = SegmentIntervalGeneratorRegistry.get_from_str(\
+                self._config["segment_interval_generator"]["provider"], self._config["segment_interval_generator"])
+            self.segment_interval_left_per_length = self._config["segment_interval_generator"]["left_per_length"]
+            self.segment_interval_right_per_length = self._config["segment_interval_generator"]["right_per_length"]
+        self.max_following_segment_cnt = self._config.get("max_following_segment_cnt", 1)
         if "no_reuse_probability" in self._config:
             self.no_reuse_probability = self._config["no_reuse_probability"]
         else:

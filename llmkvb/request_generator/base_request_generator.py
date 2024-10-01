@@ -16,7 +16,7 @@ class BaseRequestGenerator(ABC):
             local_files_only= "local_files_only" in self.config and self.config["local_files_only"]
             self.tokenizer = transformers.AutoTokenizer.from_pretrained(self.config["tokenizer_name"], local_files_only=local_files_only)
         if "content_type" not in self.config:
-            raise ValueError("content_type is not specified in the trace config file.")
+            self.config["content_type"] = "tokens"
         if self.config["content_type"] not in ["tokens", "string"]:
             raise ValueError("content_type is not supported.")
         self.content_type: str = self.config["content_type"]
