@@ -118,6 +118,7 @@ python -m llmkvb.main \
         --vllm_scheduler_config_cache_lookup_type prefix \
         --vllm_scheduler_config_cache_evict_type lru \
         --vllm_scheduler_config_cache_evict_op write \
+        --vllm_scheduler_config_gpu_write_through_cpu sync \
         --vllm_scheduler_config_cpu_memory_size 64GB \
         --vllm_scheduler_config_gpu_cpu_thput 16GB/S \
         --vllm_scheduler_config_cpu_gpu_thput 16GB/S \
